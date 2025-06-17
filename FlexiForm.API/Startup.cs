@@ -1,4 +1,9 @@
 ﻿using FlexiForm.API.Configurations;
+using FlexiForm.API.Mappings;
+using FlexiForm.API.Repositories.Implementations;
+using FlexiForm.API.Repositories.Interfaces;
+using FlexiForm.API.Services.Implementations;
+using FlexiForm.API.Services.Interfaces;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -38,15 +43,23 @@ namespace FlexiForm.API
         /// <param name="services">The service collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(config =>
+            {
+                config.AddProfile<UserMappingProfile>();
+            }, AppDomain.CurrentDomain.GetAssemblies());
+
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.Configure<ConnectionString>(Configuration.GetSection("ConnectionStrings"));
 
             string primaryDBConnectionString = Configuration.GetSection("ConnectionString:PrimaryDB").Value;
             services.AddScoped<IDbConnection>(connection => new SqlConnection(primaryDBConnectionString));
 
-            //services.AddScoped<IBaseRepository, BaseRepository>();
+            // DIs for repositories
+            services.AddScoped<IBaseRepository, BaseRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
-            //services.AddScoped<IBookService, BookService>();
+            // DIs for services
+            services.AddScoped<IUserService, UserService>();
 
             services.AddControllers().AddJsonOptions(options =>
             {

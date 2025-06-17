@@ -1,0 +1,35 @@
+﻿using FlexiForm.API.Enumerations;
+
+namespace FlexiForm.API.DTOs.Requests
+{
+    /// <summary>
+    /// Represents the data required to register a new user.
+    /// </summary>
+    public class RegistrationRequest
+    {
+        /// <summary>
+        /// Gets or sets the first name of the user.
+        /// </summary>
+        public string FirstName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the last name of the user.
+        /// </summary>
+        public string LastName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email address of the user.
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets the password for the user's account.
+        /// </summary>
+        public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the gender of the user.
+        /// </summary>
+        public Gender Gender { get; set; }
+    }
+}
