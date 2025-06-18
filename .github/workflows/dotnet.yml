@@ -1,0 +1,30 @@
+name: Build ASP.NET Web API
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build Solution
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x' # Change to match your SDK version
+
+      - name: Restore dependencies
+        run: dotnet restore FlexiForm.API.sln
+
+      - name: Build solution
+        run: dotnet build FlexiForm.API.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test FlexiForm.API.sln --configuration Release --no-build --verbosity normal
