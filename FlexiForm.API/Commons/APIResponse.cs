@@ -1,6 +1,4 @@
-﻿using FlexiForm.API.Enumerations;
-
-namespace FlexiForm.API.Common
+﻿namespace FlexiForm.API.Commons
 {
     /// <summary>
     /// Represents a standardized API response wrapper containing the result, status, message, and error code.

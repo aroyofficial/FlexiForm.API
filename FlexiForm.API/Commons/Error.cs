@@ -1,6 +1,6 @@
 ﻿using FlexiForm.API.Enumerations;
 
-namespace FlexiForm.API.Common
+namespace FlexiForm.API.Commons
 {
     /// <summary>
     /// Represents an error with a descriptive message and a corresponding error code.

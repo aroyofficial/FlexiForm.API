@@ -4,7 +4,6 @@ namespace FlexiForm.API.DTOs.Responses
 {
     /// <summary>
     /// Represents the response data returned for a user.
-    /// Inherits from <see cref="BaseDTO"/> to include the unique identifier.
     /// </summary>
     public class UserResponse : BaseDTO
     {
