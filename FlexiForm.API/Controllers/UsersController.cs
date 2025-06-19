@@ -2,7 +2,9 @@
 using FlexiForm.API.DTOs.Requests;
 using FlexiForm.API.DTOs.Responses;
 using FlexiForm.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AuthorizationPolicy = FlexiForm.API.Constants.AuthorizationPolicy;
 
 namespace FlexiForm.API.Controllers
 {
@@ -29,6 +31,7 @@ namespace FlexiForm.API.Controllers
         /// <returns>
         /// A <see cref="CreatedAtActionResult"/> containing the registered user's identifier and details.
         /// </returns>
+        [AllowAnonymous]
         [HttpPost("[action]")]
         public async Task<IActionResult> Register([FromBody] RegistrationRequest request)
         {
@@ -47,8 +50,9 @@ namespace FlexiForm.API.Controllers
         /// <returns>
         /// An <see cref="OkObjectResult"/> containing the user details, or a <see cref="NotFoundResult"/> if not found.
         /// </returns>
+        [Authorize(Policy = AuthorizationPolicy.ProfileOwner)]
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get([FromRoute]int id)
         {
             var response = await _service.GetAsync(id);
             var apiResponse = new APIResponse<UserResponse>()
