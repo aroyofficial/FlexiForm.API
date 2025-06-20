@@ -66,6 +66,7 @@ namespace FlexiForm.API.Attributes
                 ErrorCode.PasswordRequired => HttpStatusCode.BadRequest,
                 ErrorCode.StrongPasswordRequired => HttpStatusCode.BadRequest,
                 ErrorCode.UserNotFound => HttpStatusCode.NotFound,
+                ErrorCode.InvalidCredentials => HttpStatusCode.Unauthorized,
                 _ => HttpStatusCode.BadRequest
             };
         }

@@ -58,6 +58,11 @@
         /// <summary>
         /// No user found against the given email or identifier.
         /// </summary>
-        UserNotFound = 1009
+        UserNotFound = 1009,
+
+        /// <summary>
+        /// While logging in either wrong email or password is given.
+        /// </summary>
+        InvalidCredentials = 1010
     }
 }

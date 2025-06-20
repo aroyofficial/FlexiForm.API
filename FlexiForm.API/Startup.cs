@@ -1,11 +1,4 @@
-﻿using FlexiForm.API.Configurations;
-using FlexiForm.API.Mappings;
-using FlexiForm.API.Repositories.Implementations;
-using FlexiForm.API.Repositories.Interfaces;
-using FlexiForm.API.Services.Implementations;
-using FlexiForm.API.Services.Interfaces;
-using Microsoft.Data.SqlClient;
-using System.Data;
+﻿using FlexiForm.API.Extensions;
 
 namespace FlexiForm.API
 {
@@ -30,6 +23,7 @@ namespace FlexiForm.API
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
+            Environment = env;
         }
 
         /// <summary>
@@ -38,36 +32,29 @@ namespace FlexiForm.API
         public IConfiguration Configuration { get; }
 
         /// <summary>
+        /// Gets the application hosting environment.
+        /// </summary>
+        public IWebHostEnvironment Environment { get; }
+
+        /// <summary>
         /// Configures the services for the application.
         /// </summary>
         /// <param name="services">The service collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAutoMapper(config =>
-            {
-                config.AddProfile<UserMappingProfile>();
-            }, AppDomain.CurrentDomain.GetAssemblies());
-
-            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-            services.Configure<ConnectionString>(Configuration.GetSection("ConnectionStrings"));
-
-            string primaryDBConnectionString = Configuration.GetSection("ConnectionString:PrimaryDB").Value;
-            services.AddScoped<IDbConnection>(connection => new SqlConnection(primaryDBConnectionString));
-
-            // DIs for repositories
-            services.AddScoped<IBaseRepository, BaseRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
-
-            // DIs for services
-            services.AddScoped<IUserService, UserService>();
+            services.ConfigureApplication(Configuration);
+            services.ConfigureAuthentication(Configuration, Environment);
+            services.AddMappingProfiles();
+            services.AddCustomRepositories();
+            services.AddCustomServices();
+            services.ConfigureAuthorization();
+            services.AddHttpContextAccessor();
 
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition =
                 System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
             });
-
-            services.AddAuthorization();
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
