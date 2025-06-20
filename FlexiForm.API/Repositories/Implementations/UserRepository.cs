@@ -64,5 +64,23 @@ namespace FlexiForm.API.Repositories.Implementations
 
             return await _repository.QuerySingleOrDefaultAsync<User>(procedure);
         }
+
+        /// <inheritdoc/>
+        public async Task UpdateAsync(User user)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", user.RowId);
+            parameters.Add("@firstname", user.FirstName);
+            parameters.Add("@lastname", user.LastName);
+            parameters.Add("@gender", Convert.ToByte(user.Gender));
+
+            var procedure = new StoredProcedure()
+            {
+                Name = "usp_updateuser",
+                Parameters = parameters
+            };
+
+            await _repository.ExecuteAsync(procedure);
+        }
     }
 }

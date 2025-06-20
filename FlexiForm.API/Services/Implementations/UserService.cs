@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using FlexiForm.API.DTOs.Requests;
 using FlexiForm.API.DTOs.Responses;
+using FlexiForm.API.Enumerations;
 using FlexiForm.API.Exceptions;
 using FlexiForm.API.Helpers;
 using FlexiForm.API.Internals;
@@ -57,6 +59,24 @@ namespace FlexiForm.API.Services.Implementations
             return response;
         }
 
+        /// <inheritdoc/>
+        public async Task<UserResponse> UpdateAsync(int id, UserUpdateRequest request)
+        {
+            Validate(request);
+            var userLookupRequest = _mapper.Map<UserLookupRequest>(id);
+            var user = await _repository.GetAsync(userLookupRequest);
+
+            if (user == null)
+            {
+                throw new UserNotFoundException("identifier");
+            }
+
+            user = _mapper.Map(request, user, typeof(UserUpdateRequest), typeof(User)) as User;
+            await _repository.UpdateAsync(user);
+            var response = _mapper.Map<User, UserResponse>(user);
+            return response;
+        }
+
         /// <summary>
         /// Validates the <see cref="RegistrationRequest"/> object by checking required fields,
         /// length constraints, email format, and uniqueness.
@@ -69,49 +89,104 @@ namespace FlexiForm.API.Services.Implementations
                 throw new InvalidRequestException();
             }
 
-            if (string.IsNullOrWhiteSpace(request.FirstName))
-            {
-                throw new FirstNameRequiredException();
-            }
-
-            if (string.IsNullOrWhiteSpace(request.LastName))
-            {
-                throw new LastNameRequiredException();
-            }
-
-            if (string.IsNullOrWhiteSpace(request.Email))
-            {
-                throw new UserEmailRequiredException();
-            }
-
-            if (request.FirstName.Length > 128)
-            {
-                throw new RequestPropertyLengthExceededException("firstname");
-            }
-
-            if (request.LastName.Length > 128)
-            {
-                throw new RequestPropertyLengthExceededException("lastname");
-            }
-
-            if (request.Email.Length > 256)
-            {
-                throw new RequestPropertyLengthExceededException("email");
-            }
-
-            if (new MailAddress(request.Email).Address != request.Email)
-            {
-                throw new InvalidEmailException();
-            }
+            ValidateName(request.FirstName, request.LastName);
+            ValidateEmail(request.Email);
+            ValidateGender(request.Gender);
 
             PasswordHelper.CheckStrength(request.Password);
 
-            var lookupRequest = new UserLookupRequest() { Email = request.Email };
+            var lookupRequest = _mapper.Map<UserLookupRequest>(request.Email);
             var user = await _repository.GetAsync(lookupRequest);
 
             if (user != null)
             {
                 throw new UserAlreadyExistsException();
+            }
+        }
+
+        /// <summary>
+        /// Validates the provided <see cref="UserUpdateRequest"/> object, including first name, last name, and gender.
+        /// Throws specific exceptions if validation fails.
+        /// </summary>
+        /// <param name="request">The user update request to validate.</param>
+        private static void Validate(UserUpdateRequest request)
+        {
+            if (request == null)
+            {
+                throw new InvalidRequestException();
+            }
+
+            ValidateName(request.FirstName, request.LastName);
+            ValidateGender(request.Gender);
+        }
+
+        /// <summary>
+        /// Validates the first and last name for null, whitespace, and length constraints.
+        /// Throws specific exceptions if validation fails.
+        /// </summary>
+        /// <param name="firstName">The first name to validate.</param>
+        /// <param name="lastName">The last name to validate.</param>
+        private static void ValidateName(string? firstName, string? lastName)
+        {
+            if (string.IsNullOrWhiteSpace(firstName))
+            {
+                throw new FirstNameRequiredException();
+            }
+
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                throw new LastNameRequiredException();
+            }
+
+            if (firstName.Length > 128)
+            {
+                throw new RequestPropertyLengthExceededException("firstname");
+            }
+
+            if (lastName.Length > 128)
+            {
+                throw new RequestPropertyLengthExceededException("lastname");
+            }
+        }
+
+        /// <summary>
+        /// Validates the email address for null, whitespace, length, and proper format.
+        /// Throws specific exceptions if validation fails.
+        /// </summary>
+        /// <param name="email">The email address to validate.</param>
+        private static void ValidateEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                throw new UserEmailRequiredException();
+            }
+
+            if (email.Length > 256)
+            {
+                throw new RequestPropertyLengthExceededException("email");
+            }
+
+            if (new MailAddress(email).Address != email)
+            {
+                throw new InvalidEmailException();
+            }
+        }
+
+        /// <summary>
+        /// Validates whether the provided gender value is a defined enum value.
+        /// Throws an exception if the gender is invalid.
+        /// </summary>
+        /// <param name="gender">The gender value to validate.</param>
+        private static void ValidateGender(Gender? gender)
+        {
+            if (!gender.HasValue)
+            {
+                throw new GenderRequiredException();
+            }
+
+            if (!Enum.IsDefined(typeof(Gender), gender.Value))
+            {
+                throw new InvalidGenderException(gender.Value);
             }
         }
     }

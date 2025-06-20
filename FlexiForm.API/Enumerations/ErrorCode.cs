@@ -63,6 +63,16 @@
         /// <summary>
         /// While logging in either wrong email or password is given.
         /// </summary>
-        InvalidCredentials = 1010
+        InvalidCredentials = 1010,
+
+        /// <summary>
+        /// An invalid gender is given which is not part of the <see cref="Gender"/>.
+        /// </summary>
+        InvalidGender = 1011,
+
+        /// <summary>
+        /// Gender is required for the user.
+        /// </summary>
+        GenderRequired = 1012
     }
 }

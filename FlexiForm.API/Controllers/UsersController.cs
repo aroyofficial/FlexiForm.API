@@ -61,5 +61,26 @@ namespace FlexiForm.API.Controllers
             };
             return Ok(apiResponse);
         }
+
+        /// <summary>
+        /// Updates an existing user's information based on the provided user ID and update request.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to update.</param>
+        /// <param name="request">The <see cref="UserUpdateRequest"/> object containing the updated user details.</param>
+        /// <returns>
+        /// An <see cref="IActionResult"/> containing a success response with the updated <see cref="UserResponse"/> data.
+        /// Returns <c>200 OK</c> if the update is successful.
+        /// </returns>
+        [Authorize(Policy = AuthorizationPolicy.ProfileOwner)]
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UserUpdateRequest request)
+        {
+            var response = await _service.UpdateAsync(id, request);
+            var apiResponse = new APIResponse<UserResponse>()
+            {
+                Data = response
+            };
+            return Ok(apiResponse);
+        }
     }
 }
