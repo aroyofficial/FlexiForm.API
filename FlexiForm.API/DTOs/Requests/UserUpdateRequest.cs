@@ -20,6 +20,6 @@ namespace FlexiForm.API.DTOs.Requests
         /// <summary>
         /// Gets or sets the user's gender.
         /// </summary>
-        public Gender? Gender { get; set; }
+        public Gender Gender { get; set; }
     }
 }

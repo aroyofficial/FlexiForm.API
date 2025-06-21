@@ -177,16 +177,16 @@ namespace FlexiForm.API.Services.Implementations
         /// Throws an exception if the gender is invalid.
         /// </summary>
         /// <param name="gender">The gender value to validate.</param>
-        private static void ValidateGender(Gender? gender)
+        private static void ValidateGender(Gender gender)
         {
-            if (!gender.HasValue)
+            if (gender == Gender.None)
             {
                 throw new GenderRequiredException();
             }
 
-            if (!Enum.IsDefined(typeof(Gender), gender.Value))
+            if (!Enum.IsDefined(typeof(Gender), gender))
             {
-                throw new InvalidGenderException(gender.Value);
+                throw new InvalidGenderException(gender);
             }
         }
     }

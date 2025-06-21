@@ -6,6 +6,11 @@
     public enum Gender
     {
         /// <summary>
+        /// Indicates no value is given.
+        /// </summary>
+        None,
+
+        /// <summary>
         /// Indicates a male user.
         /// </summary>
         Male,
