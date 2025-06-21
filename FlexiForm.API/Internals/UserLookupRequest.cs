@@ -10,7 +10,7 @@
         /// Gets or sets the unique identifier of the user.
         /// Optional if <see cref="Email"/> is provided.
         /// </summary>
-        public int? Id { get; set; }
+        public Guid? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the email address of the user.

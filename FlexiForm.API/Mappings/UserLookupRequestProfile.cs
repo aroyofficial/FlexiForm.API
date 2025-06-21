@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FlexiForm.API.Commons.Interfaces;
 using FlexiForm.API.DTOs.Requests;
 using FlexiForm.API.Internals;
 
@@ -16,7 +17,7 @@ namespace FlexiForm.API.Mappings
         {
             MapLoginRequest();
             MapString();
-            MapInt();
+            MapICurrentUser();
         }
 
         /// <summary>
@@ -38,12 +39,12 @@ namespace FlexiForm.API.Mappings
         }
 
         /// <summary>
-        /// Configures mapping from an <see cref="int"/> value to a <see cref="UserLookupRequest"/> object.
+        /// Configures the mapping from <see cref="ICurrentUser"/> to <see cref="UserLookupRequest"/>.
         /// </summary>
-        private void MapInt()
+        private void MapICurrentUser()
         {
-            CreateMap<int, UserLookupRequest>()
-                .ForMember(dest => dest.Id, member => member.MapFrom(src => src));
+            CreateMap<ICurrentUser, UserLookupRequest>()
+                .ForMember(dest => dest.Id, member => member.MapFrom(src => src.InternalId));
         }
     }
 }

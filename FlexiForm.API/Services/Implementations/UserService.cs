@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Azure.Core;
+using FlexiForm.API.Commons.Interfaces;
 using FlexiForm.API.DTOs.Requests;
 using FlexiForm.API.DTOs.Responses;
 using FlexiForm.API.Enumerations;
@@ -20,22 +21,25 @@ namespace FlexiForm.API.Services.Implementations
     {
         private readonly IUserRepository _repository;
         private readonly IMapper _mapper;
+        private readonly ICurrentUser _currentUser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserService"/> class.
         /// </summary>
         /// <param name="repository">The user repository for data access.</param>
         /// <param name="mapper">The AutoMapper instance used for object mapping.</param>
-        public UserService(IUserRepository repository, IMapper mapper)
+        /// <param name="currentUser">The current user context providing information about the authenticated user.</param>
+        public UserService(IUserRepository repository, IMapper mapper, ICurrentUser currentUser)
         {
             _repository = repository;
             _mapper = mapper;
+            _currentUser = currentUser;
         }
 
         /// <inheritdoc/>
         public async Task<UserResponse> GetAsync(int id)
         {
-            var lookupRequest = new UserLookupRequest() { Id = id };
+            var lookupRequest = _mapper.Map<UserLookupRequest>(_currentUser);
             var user = await _repository.GetAsync(lookupRequest);
             
             if (user == null)
