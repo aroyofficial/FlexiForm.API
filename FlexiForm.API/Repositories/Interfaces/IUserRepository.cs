@@ -29,5 +29,14 @@ namespace FlexiForm.API.Repositories.Interfaces
         /// or <c>null</c> if no user is found.
         /// </returns>
         Task<User> GetAsync(UserLookupRequest request);
+
+        /// <summary>
+        /// Asynchronously updates an existing user record in the database.
+        /// </summary>
+        /// <param name="user">The <see cref="User"/> object containing updated user information. The user must have a valid identifier.</param>
+        /// <returns>
+        /// A task that represents the asynchronous update operation.
+        /// </returns>
+        Task UpdateAsync(User user);
     }
 }

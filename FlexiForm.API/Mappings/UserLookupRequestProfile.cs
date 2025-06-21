@@ -15,6 +15,8 @@ namespace FlexiForm.API.Mappings
         public UserLookupRequestProfile()
         {
             MapLoginRequest();
+            MapString();
+            MapInt();
         }
 
         /// <summary>
@@ -24,6 +26,24 @@ namespace FlexiForm.API.Mappings
         {
             CreateMap<LoginRequest, UserLookupRequest>()
                 .ForMember(dest => dest.Email, member => member.MapFrom(src => src.Email));
+        }
+
+        /// <summary>
+        /// Configures mapping from a <see cref="string"/> value to a <see cref="UserLookupRequest"/> object.
+        /// </summary>
+        private void MapString()
+        {
+            CreateMap<string, UserLookupRequest>()
+                .ForMember(dest => dest.Email, member => member.MapFrom(src => src));
+        }
+
+        /// <summary>
+        /// Configures mapping from an <see cref="int"/> value to a <see cref="UserLookupRequest"/> object.
+        /// </summary>
+        private void MapInt()
+        {
+            CreateMap<int, UserLookupRequest>()
+                .ForMember(dest => dest.Id, member => member.MapFrom(src => src));
         }
     }
 }

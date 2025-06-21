@@ -27,5 +27,16 @@ namespace FlexiForm.API.Services.Interfaces
         /// containing the user's data if found; otherwise, <c>null</c>.
         /// </returns>
         Task<UserResponse> GetAsync(int id);
+
+        /// <summary>
+        /// Updates the profile information of a user with the specified identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to update.</param>
+        /// <param name="request">An object containing the updated user details.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. 
+        /// The task result contains a <see cref="UserResponse"/> object with the updated user information.
+        /// </returns>
+        Task<UserResponse> UpdateAsync(int id, UserUpdateRequest request);
     }
 }
