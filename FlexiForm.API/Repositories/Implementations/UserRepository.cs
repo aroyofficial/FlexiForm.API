@@ -34,7 +34,7 @@ namespace FlexiForm.API.Repositories.Implementations
 
             var procedure = new StoredProcedure()
             {
-                Name = "usp_createuser",
+                Name = "usp_CreateUser",
                 Parameters = parameters
             };
 
@@ -58,7 +58,7 @@ namespace FlexiForm.API.Repositories.Implementations
 
             var procedure = new StoredProcedure()
             {
-                Name = "usp_getuser",
+                Name = "usp_GetUser",
                 Parameters = parameters
             };
 
@@ -76,7 +76,7 @@ namespace FlexiForm.API.Repositories.Implementations
 
             var procedure = new StoredProcedure()
             {
-                Name = "usp_updateuser",
+                Name = "usp_UpdateUser",
                 Parameters = parameters
             };
 
