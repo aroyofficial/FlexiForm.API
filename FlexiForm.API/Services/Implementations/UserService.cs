@@ -67,7 +67,7 @@ namespace FlexiForm.API.Services.Implementations
         public async Task<UserResponse> UpdateAsync(int id, UserUpdateRequest request)
         {
             Validate(request);
-            var userLookupRequest = _mapper.Map<UserLookupRequest>(id);
+            var userLookupRequest = _mapper.Map<UserLookupRequest>(_currentUser);
             var user = await _repository.GetAsync(userLookupRequest);
 
             if (user == null)
