@@ -82,5 +82,20 @@ namespace FlexiForm.API.Repositories.Implementations
 
             await _repository.ExecuteAsync(procedure);
         }
+
+        /// <inheritdoc/>
+        public async Task DeleteAsync(Guid userId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", userId);
+
+            var procedure = new StoredProcedure()
+            {
+                Name = "usp_DeleteUser",
+                Parameters = parameters
+            };
+
+            await _repository.ExecuteAsync(procedure);
+        }
     }
 }

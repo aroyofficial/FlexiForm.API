@@ -38,5 +38,12 @@ namespace FlexiForm.API.Repositories.Interfaces
         /// A task that represents the asynchronous update operation.
         /// </returns>
         Task UpdateAsync(User user);
+
+        /// <summary>
+        /// Asynchronously deletes a user based on the provided unique identifier.
+        /// </summary>
+        /// <param name="UserId">The unique identifier (GUID) of the user to delete.</param>
+        /// <returns>A task representing the asynchronous delete operation.</returns>
+        Task DeleteAsync(Guid UserId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using FlexiForm.API.Commons;
+﻿using Azure.Core;
+using FlexiForm.API.Commons;
 using FlexiForm.API.DTOs.Requests;
 using FlexiForm.API.DTOs.Responses;
 using FlexiForm.API.Services.Interfaces;
@@ -80,6 +81,23 @@ namespace FlexiForm.API.Controllers
             {
                 Data = response
             };
+            return Ok(apiResponse);
+        }
+
+        /// <summary>
+        /// Deletes a user profile based on the specified ID.
+        /// </summary>
+        /// <param name="id">The ID of the profile to be deleted.</param>
+        /// <returns>
+        /// Returns an <see cref="IActionResult"/> indicating the result of the delete operation.  
+        /// A 200 OK response with an empty <see cref="APIResponse{T}"/> object is returned if the deletion is successful.
+        /// </returns>
+        [Authorize(Policy = AuthorizationPolicy.ProfileOwner)]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            await _service.DeleteAsync(id);
+            var apiResponse = new APIResponse<object>();
             return Ok(apiResponse);
         }
     }
