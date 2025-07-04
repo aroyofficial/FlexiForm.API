@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using FlexiForm.API.Commons;
+﻿using FlexiForm.API.Commons;
 using FlexiForm.API.DTOs.Requests;
 using FlexiForm.API.DTOs.Responses;
 using FlexiForm.API.Services.Interfaces;
