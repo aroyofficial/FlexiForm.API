@@ -81,6 +81,22 @@ namespace FlexiForm.API.Services.Implementations
             return response;
         }
 
+        /// <inheritdoc/>
+        public async Task DeleteAsync(int id)
+        {
+            var lookupRequest = _mapper.Map<UserLookupRequest>(_currentUser);
+            var user = await _repository.GetAsync(lookupRequest);
+
+            if (user == null)
+            {
+                throw new UserNotFoundException("identifier");
+            }
+            else
+            {
+                await _repository.DeleteAsync(_currentUser.InternalId.Value);
+            }
+        }
+
         /// <summary>
         /// Validates the <see cref="RegistrationRequest"/> object by checking required fields,
         /// length constraints, email format, and uniqueness.

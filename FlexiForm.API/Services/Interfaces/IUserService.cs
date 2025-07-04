@@ -38,5 +38,13 @@ namespace FlexiForm.API.Services.Interfaces
         /// The task result contains a <see cref="UserResponse"/> object with the updated user information.
         /// </returns>
         Task<UserResponse> UpdateAsync(int id, UserUpdateRequest request);
+
+        /// <summary>
+        /// Asynchronously deletes an user based on the provided identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to delete.</param>
+        /// <returns>A task representing the asynchronous delete operation.</returns>
+        Task DeleteAsync(int id);
+
     }
 }
