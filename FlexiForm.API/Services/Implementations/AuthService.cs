@@ -33,6 +33,23 @@ namespace FlexiForm.API.Services.Implementations
         }
 
         /// <inheritdoc/>
+        public async Task GenerateOTPAsync(string email)
+        {
+            var lookUpRequest = _mapper.Map<UserLookupRequest>(email);
+            var user = await _repository.GetAsync(lookUpRequest);
+
+            if (user == null)
+            {
+                throw new UserNotFoundException("email");
+            }
+
+            // otp generate
+            // store otp in database
+            // mail the otp to the user
+            // return otp response to the controller
+        }
+
+        /// <inheritdoc/>
         /// <summary>
         /// Authenticates the user based on the provided login request.
         /// </summary>

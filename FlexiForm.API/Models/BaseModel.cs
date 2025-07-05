@@ -28,7 +28,7 @@
         /// <summary>
         /// Gets or sets the unique identifier of the user who created the entity.
         /// </summary>
-        public Guid? CreatedBy { get; set; }
+        public Guid CreatedBy { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the user who last updated the entity.

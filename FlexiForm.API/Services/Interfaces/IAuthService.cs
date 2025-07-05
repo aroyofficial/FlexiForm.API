@@ -17,5 +17,12 @@ namespace FlexiForm.API.Services.Interfaces
         /// and authenticated user details if credentials are valid.
         /// </returns>
         Task<LoginResponse> LoginAsync(LoginRequest request);
+
+        /// <summary>
+        /// Generates a new OTP (One-Time Password) for the specified email address asynchronously.
+        /// </summary>
+        /// <param name="email">The email address for which the OTP is to be generated.</param>
+        Task GenerateOTPAsync(string email);
+
     }
 }
