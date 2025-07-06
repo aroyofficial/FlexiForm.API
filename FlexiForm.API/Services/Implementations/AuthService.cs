@@ -53,10 +53,25 @@ namespace FlexiForm.API.Services.Implementations
                 throw new UserNotFoundException("email");
             }
 
-            // otp generate
-            // store otp in database
-            // mail the otp to the user
-            // return otp response to the controller
+            var otp = OTPHelper.Generate();
+            var request = new OTPRequest()
+            {
+                Value = otp.Value,
+                Salt = otp.Salt,
+                GeneratedAt = DateTime.UtcNow,
+                ExpiredAt = DateTime.UtcNow.AddMinutes(10),
+                CreatedBy = user.RowId
+            };
+            await _authRepository.AddOTPAsync(request);
+            var payload = new MailPayload()
+            {
+                ToEmail = user.Email,
+                Macros = new Dictionary<string, string>
+                {
+                    { "OTP", otp.Value },
+                }
+            };
+            await _mailService.SendForgotPasswordMailAsync(payload);
         }
 
         /// <inheritdoc/>
