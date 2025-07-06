@@ -24,5 +24,15 @@ namespace FlexiForm.API.Services.Interfaces
         /// <param name="email">The email address for which the OTP is to be generated.</param>
         Task GenerateOTPAsync(string email);
 
+        /// <summary>
+        /// Resets the user's password using the provided OTP and new password.
+        /// </summary>
+        /// <param name="request">
+        /// The request payload containing the user's email address, new password, and one-time password (OTP).
+        /// </param>
+        /// <returns>
+        /// A task representing the asynchronous operation of resetting the password.
+        /// </returns>
+        Task ResetPasswordAsync(ResetPasswordRequest request);
     }
 }

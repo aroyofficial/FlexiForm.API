@@ -73,6 +73,21 @@
         /// <summary>
         /// Gender is required for the user.
         /// </summary>
-        GenderRequired = 1012
+        GenderRequired = 1012,
+
+        /// <summary>
+        /// The one-time password (OTP) is required but was not provided in the request.
+        /// </summary>
+        OTPRequired = 1013,
+
+        /// <summary>
+        /// Indicates that a one-time password (OTP) was not found for the user with the provided email or identifier.
+        /// </summary>
+        OTPNotFound = 1014,
+
+        /// <summary>
+        /// The OTP provided by the user is invalid or does not match the expected value.
+        /// </summary>
+        InvalidOTP = 1015,
     }
 }

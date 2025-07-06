@@ -18,6 +18,11 @@ namespace FlexiForm.API.Models
         public string Value { get; set; }
 
         /// <summary>
+        /// Gets or sets the dynamic salt used for OTP hashing.
+        /// </summary>
+        public string Salt { get; set; }
+
+        /// <summary>
         /// Gets or sets the timestamp when the OTP was generated.
         /// </summary>
         public DateTime GeneratedAt { get; set; }

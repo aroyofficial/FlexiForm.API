@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using FlexiForm.API.DTOs.Requests;
 using FlexiForm.API.Internals;
+using FlexiForm.API.Models;
 using FlexiForm.API.Repositories.Interfaces;
 
 namespace FlexiForm.API.Repositories.Implementations
@@ -21,11 +22,7 @@ namespace FlexiForm.API.Repositories.Implementations
             _repository = repository;
         }
 
-        /// <summary>
-        /// Adds a new OTP (One-Time Password) record to the database asynchronously.
-        /// </summary>
-        /// <param name="request">The OTP request data containing the value, generation time, expiration time, and creator information.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <inheritdoc/>
         public async Task AddOTPAsync(OTPRequest request)
         {
             var parameters = new DynamicParameters();
@@ -37,6 +34,38 @@ namespace FlexiForm.API.Repositories.Implementations
             var procedure = new StoredProcedure()
             {
                 Name = "usp_AddOTP",
+                Parameters = parameters
+            };
+
+            await _repository.ExecuteAsync(procedure);
+        }
+
+        /// <inheritdoc/>
+        public async Task<OTP> GetOTPAsync(Guid userId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@userid", userId);
+
+            var procedure = new StoredProcedure()
+            {
+                Name = "usp_GetOTP",
+                Parameters = parameters
+            };
+
+            return await _repository.QuerySingleOrDefaultAsync<OTP>(procedure);
+        }
+
+        /// <inheritdoc/>
+        public async Task ResetPasswordAsync(Guid userId, ResetPasswordRequest request)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@userid", userId);
+            parameters.Add("@password", request.NewPassword);
+            parameters.Add("@otp", request.OTP);
+
+            var procedure = new StoredProcedure()
+            {
+                Name = "usp_ResetPassword",
                 Parameters = parameters
             };
 

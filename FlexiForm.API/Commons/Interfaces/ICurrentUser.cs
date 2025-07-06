@@ -24,5 +24,10 @@
         /// Gets a value indicating whether the current user is authenticated.
         /// </summary>
         bool IsAuthenticated { get; }
+
+        /// <summary>
+        /// Gets the local time of the client user.
+        /// </summary>
+        DateTime LocalTimeNow { get; }
     }
 }
