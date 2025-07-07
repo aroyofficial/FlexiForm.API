@@ -37,6 +37,12 @@ namespace FlexiForm.API.Attributes
                 response.Error.Message = baseEx.Message;
                 statusCode = GetHTTPStatusCode(baseEx);
             }
+            else if (ex is ArgumentNullException)
+            {
+                response.Error.ErrorCode = ErrorCode.InvalidRequest;
+                response.Error.Message = "A required argument or request body was null.";
+                statusCode = HttpStatusCode.BadRequest;
+            }
 
             context.Result = new ObjectResult(response)
             {
@@ -69,6 +75,9 @@ namespace FlexiForm.API.Attributes
                 ErrorCode.InvalidCredentials => HttpStatusCode.Unauthorized,
                 ErrorCode.InvalidGender => HttpStatusCode.BadRequest,
                 ErrorCode.GenderRequired => HttpStatusCode.BadRequest,
+                ErrorCode.OTPRequired => HttpStatusCode.BadRequest,
+                ErrorCode.OTPNotFound => HttpStatusCode.NotFound,
+                ErrorCode.InvalidOTP => HttpStatusCode.BadRequest,
                 _ => HttpStatusCode.BadRequest
             };
         }

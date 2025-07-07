@@ -42,5 +42,40 @@ namespace FlexiForm.API.Controllers
             };
             return Ok(apiResponse);
         }
+
+        /// <summary>
+        /// Handles the password reset request for a user by validating the provided OTP and setting the new password.
+        /// </summary>
+        /// <param name="request">
+        /// The <see cref="ResetPasswordRequest"/> object containing the user's email, new password, and OTP.
+        /// </param>
+        /// <returns>
+        /// An <see cref="IActionResult"/> indicating the result of the operation. 
+        /// Returns <c>200 OK</c> with a standard <see cref="APIResponse{T}"/> if the reset is successful.
+        /// </returns>
+        [AllowAnonymous]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
+        {
+            await _service.ResetPasswordAsync(request);
+            var apiResponse = new APIResponse<string>();
+            return Ok(apiResponse);
+        }
+
+        /// <summary>
+        /// Initiates the password reset process by generating a One-Time Password (OTP) for the provided email address.
+        /// </summary>
+        /// <param name="request">An object containing the email address of the user requesting a password reset.</param>
+        /// <returns>
+        /// An <see cref="IActionResult"/> containing an <see cref="APIResponse{T}"/> with the result of the OTP generation process.
+        /// </returns>
+        [AllowAnonymous]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
+        {
+            await _service.GenerateOTPAsync(request);
+            var apiResponse = new APIResponse<string>();
+            return Ok(apiResponse);
+        }
     }
 }

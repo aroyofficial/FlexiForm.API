@@ -33,6 +33,7 @@ namespace FlexiForm.API.Extensions
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
             services.Configure<ConnectionString>(configuration.GetSection("ConnectionStrings"));
             services.Configure<TokenConfiguration>(configuration.GetSection("TokenConfiguration"));
+            services.Configure<SMTPConfiguration>(configuration.GetSection("SMTPConfiguration"));
             string primaryDBConnectionString = configuration.GetSection("ConnectionString:PrimaryDB").Value;
             services.AddScoped<IDbConnection>(connection => new SqlConnection(primaryDBConnectionString));
         }
@@ -110,6 +111,7 @@ namespace FlexiForm.API.Extensions
         {
             services.AddScoped<IBaseRepository, BaseRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
         }
 
         /// <summary>
@@ -119,6 +121,7 @@ namespace FlexiForm.API.Extensions
         public static void AddCustomServices(this IServiceCollection services)
         {
             services.AddSingleton<ITokenService, TokenService>();
+            services.AddSingleton<IMailService, GoogleMailService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ICurrentUser, CurrentUser>();

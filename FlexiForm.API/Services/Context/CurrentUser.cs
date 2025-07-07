@@ -33,6 +33,9 @@ namespace FlexiForm.API.Services.Context
         public bool IsAuthenticated =>
             _context.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
+        /// <inheritdoc />
+        public DateTime LocalTimeNow => GetClientLocalTime();
+
         /// <summary>
         /// Retrieves a claim value of a specified type from the current user's claims.
         /// </summary>
@@ -61,6 +64,39 @@ namespace FlexiForm.API.Services.Context
             {
                 return default;
             }
+        }
+
+        /// <summary>
+        /// Retrieves the client's current local time based on the custom header 'X-FlexiForm-ClientTimeZone'.
+        /// Falls back to UTC time if the header is missing or contains an invalid time zone ID.
+        /// </summary>
+        /// <returns>
+        /// The current <see cref="DateTime"/> in the client's local time zone, or UTC if the time zone is invalid or unavailable.
+        /// </returns>
+        private DateTime GetClientLocalTime()
+        {
+            var timeZoneId = _context.HttpContext?.Request
+                .Headers["X-FlexiForm-ClientTimeZone"]
+                .FirstOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(timeZoneId))
+            {
+                try
+                {
+                    var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+                    return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneInfo);
+                }
+                catch (TimeZoneNotFoundException)
+                {
+                    // Invalid or unknown time zone ID
+                }
+                catch (InvalidTimeZoneException)
+                {
+                    // Corrupted or unrecognized time zone data
+                }
+            }
+
+            return DateTime.UtcNow;
         }
     }
 }

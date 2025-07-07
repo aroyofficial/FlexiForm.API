@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FlexiForm.API.Commons.Interfaces;
 using FlexiForm.API.DTOs.Requests;
 using FlexiForm.API.DTOs.Responses;
 using FlexiForm.API.Exceptions;
@@ -17,19 +18,67 @@ namespace FlexiForm.API.Services.Implementations
     {
         private readonly ITokenService _service;
         private readonly IUserRepository _repository;
+        private readonly IAuthRepository _authRepository;
         private readonly IMapper _mapper;
+        private readonly IMailService _mailService;
+        private readonly ICurrentUser _currentUser;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthService"/> class.
+        /// Initializes a new instance of the <see cref="AuthService" /> class.
         /// </summary>
         /// <param name="service">The token generation service.</param>
         /// <param name="repository">The user repository for data access.</param>
         /// <param name="mapper">The AutoMapper instance for object-to-object mapping.</param>
-        public AuthService(ITokenService service, IUserRepository repository, IMapper mapper)
+        /// <param name="authRepository">The authentication repository for handling authentication-related data.</param>
+        /// <param name="mailService">The mail service for sending emails.</param>
+        /// <param name="currentUser">The current user.</param>
+        public AuthService(ITokenService service, IUserRepository repository, IMapper mapper, IAuthRepository authRepository, IMailService mailService, ICurrentUser currentUser)
         {
             _service = service;
             _repository = repository;
             _mapper = mapper;
+            _authRepository = authRepository;
+            _mailService = mailService;
+            _currentUser = currentUser;
+        }
+
+        /// <inheritdoc/>
+        public async Task GenerateOTPAsync(ForgotPasswordRequest request)
+        {
+            if (request == null)
+            {
+                throw new InvalidRequestException();
+            }
+
+            var lookUpRequest = _mapper.Map<UserLookupRequest>(request.Email);
+            var user = await _repository.GetAsync(lookUpRequest);
+
+            if (user == null)
+            {
+                throw new UserNotFoundException("email");
+            }
+
+            var otp = OTPHelper.Generate();
+            const int expiryMinutes = 1;
+            var otpRequest = new OTPRequest()
+            {
+                Value = otp.Hash,
+                Salt = otp.Salt,
+                GeneratedAt = DateTime.UtcNow,
+                ExpiredAt = DateTime.UtcNow.AddMinutes(expiryMinutes),
+                CreatedBy = user.RowId
+            };
+            await _authRepository.AddOTPAsync(otpRequest);
+            var payload = new MailPayload()
+            {
+                ToEmail = user.Email,
+                Macros = new Dictionary<string, string>
+                {
+                    { "OTP", otp.Value },
+                    { "EXPIRY", expiryMinutes.ToString() }
+                }
+            };
+            await _mailService.SendForgotPasswordMailAsync(payload);
         }
 
         /// <inheritdoc/>
@@ -52,6 +101,34 @@ namespace FlexiForm.API.Services.Implementations
             var response = _mapper.Map<LoginResponse>(token);
             response = _mapper.Map(user, response, typeof(User), typeof(LoginResponse)) as LoginResponse;
             return response;
+        }
+
+        /// <inheritdoc/>
+        public async Task ResetPasswordAsync(ResetPasswordRequest request)
+        {
+            var (user, otp) = await ValidateAsync(request);
+            
+            if (!OTPHelper.Verify(otp, request.OTP))
+            {
+                throw new InvalidOTPException();
+            }
+
+            request.NewPassword = PasswordHelper.GetHash(request.NewPassword);
+            request.OTP = otp.Value;
+            await _authRepository.ResetPasswordAsync(user.RowId, request);
+
+            var payload = new MailPayload()
+            {
+                ToEmail = user.Email,
+                Macros = new Dictionary<string, string>
+                {
+                    { "USERNAME", user.FirstName },
+                    { "DATETIME", _currentUser.LocalTimeNow.ToString("MMMM d, yyyy 'at' h:mm tt") },
+                    { "CURRENTYEAR", _currentUser.LocalTimeNow.Year.ToString() },
+                }
+            };
+
+            await _mailService.SendPasswordChangedAlertMailAsync(payload);
         }
 
         /// <summary>
@@ -85,6 +162,58 @@ namespace FlexiForm.API.Services.Implementations
             }
 
             return user;
+        }
+
+        /// <summary>
+        /// Validates the incoming reset password request by checking all required fields,
+        /// ensuring password strength, and verifying the existence of the user and their associated OTP.
+        /// </summary>
+        /// <param name="request">
+        /// The reset password request containing the user's email, new password, and OTP.
+        /// </param>
+        /// <returns>
+        /// A task representing the asynchronous operation. The task result contains a tuple with the validated <see cref="User"/>
+        /// and the associated <see cref="OTP"/>.
+        /// </returns>
+        private async Task<(User, OTP)> ValidateAsync(ResetPasswordRequest request)
+        {
+            if (request == null)
+            {
+                throw new InvalidRequestException();
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                throw new UserEmailRequiredException();
+            }
+
+            if (string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                throw new PasswordRequiredException();
+            }
+
+            PasswordHelper.CheckStrength(request.NewPassword);
+
+            if (string.IsNullOrWhiteSpace(request.OTP))
+            {
+                throw new OTPRequiredException();
+            }
+
+            var userLookupRequest = _mapper.Map<UserLookupRequest>(request.Email);
+            var user = await _repository.GetAsync(userLookupRequest);
+
+            if (user == null)
+            {
+                throw new UserNotFoundException("email");
+            }
+
+            var otp = await _authRepository.GetOTPAsync(user.RowId);
+            if (otp == null)
+            {
+                throw new OTPNotFoundException();
+            }
+
+            return (user, otp);
         }
     }
 }

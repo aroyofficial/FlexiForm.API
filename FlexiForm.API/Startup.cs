@@ -59,9 +59,16 @@ namespace FlexiForm.API
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
-                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                options.IncludeXmlComments(xmlPath);
+                try
+                {
+                    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                    options.IncludeXmlComments(xmlPath);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Swagger XML loading error: " + ex.Message);
+                }
             });
         }
 
