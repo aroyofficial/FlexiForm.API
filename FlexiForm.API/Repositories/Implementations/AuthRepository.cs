@@ -5,7 +5,7 @@ using FlexiForm.API.Models;
 using FlexiForm.API.Repositories.Interfaces;
 
 namespace FlexiForm.API.Repositories.Implementations
-{
+{0
     /// <summary>
     /// Provides the implementation for authentication-related data operations.
     /// </summary>
@@ -27,6 +27,7 @@ namespace FlexiForm.API.Repositories.Implementations
         {
             var parameters = new DynamicParameters();
             parameters.Add("@value", request.Value);
+            parameters.Add("@salt", request.Salt);
             parameters.Add("@generatedat", request.GeneratedAt);
             parameters.Add("@expiredat", request.ExpiredAt);
             parameters.Add("@createdby", request.CreatedBy);
