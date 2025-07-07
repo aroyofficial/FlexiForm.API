@@ -59,9 +59,9 @@ namespace FlexiForm.API.Repositories.Implementations
         public async Task ResetPasswordAsync(Guid userId, ResetPasswordRequest request)
         {
             var parameters = new DynamicParameters();
+            parameters.Add("@otp", request.OTP);
             parameters.Add("@userid", userId);
             parameters.Add("@password", request.NewPassword);
-            parameters.Add("@otp", request.OTP);
 
             var procedure = new StoredProcedure()
             {

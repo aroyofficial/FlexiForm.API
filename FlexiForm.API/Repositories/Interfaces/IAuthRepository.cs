@@ -1,4 +1,5 @@
 ﻿using FlexiForm.API.DTOs.Requests;
+using FlexiForm.API.Internals;
 using FlexiForm.API.Models;
 
 namespace FlexiForm.API.Repositories.Interfaces
@@ -17,9 +18,9 @@ namespace FlexiForm.API.Repositories.Interfaces
         /// <summary>
         /// Retrieves the one-time password (OTP) associated with the specified user ID.
         /// </summary>
-        /// <param name="userId">The unique identifier of the user for whom the OTP is requested.</param>
+        /// <param name="userId">The unique identifier of the user whose OTP is to be retrieved.</param>
         /// <returns>
-        /// A task that represents the asynchronous operation. The task result contains the <see cref="OTP"/> entity associated with the user.
+        /// A task that represents the asynchronous operation. The task result contains the <see cref="OTP"/> entity linked to the specified user ID.
         /// </returns>
         Task<OTP> GetOTPAsync(Guid userId);
 

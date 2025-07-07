@@ -177,8 +177,8 @@ namespace FlexiForm.API.Services.Implementations
                 throw new OTPRequiredException();
             }
 
-            var lookupRequest = _mapper.Map<UserLookupRequest>(request.Email);
-            var user = await _repository.GetAsync(lookupRequest);
+            var userLookupRequest = _mapper.Map<UserLookupRequest>(request.Email);
+            var user = await _repository.GetAsync(userLookupRequest);
 
             if (user == null)
             {
