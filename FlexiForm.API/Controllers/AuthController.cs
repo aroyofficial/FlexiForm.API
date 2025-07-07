@@ -63,20 +63,19 @@ namespace FlexiForm.API.Controllers
         }
 
         /// <summary>
-        /// Generates an OTP (One-Time Password) for the specified email address to initiate the password reset process.
+        /// Initiates the password reset process by generating a One-Time Password (OTP) for the provided email address.
         /// </summary>
-        /// <param name="email">The email address of the user who has requested to reset their password.</param>
+        /// <param name="request">An object containing the email address of the user requesting a password reset.</param>
         /// <returns>
-        /// An <see cref="IActionResult"/> containing an <see cref="APIResponse{T}"/> with the operation result.
+        /// An <see cref="IActionResult"/> containing an <see cref="APIResponse{T}"/> with the result of the OTP generation process.
         /// </returns>
         [AllowAnonymous]
         [HttpPost("[action]")]
-        public async Task<IActionResult> ForgotPassword(string email)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
         {
-            await _service.GenerateOTPAsync(email);
+            await _service.GenerateOTPAsync(request);
             var apiResponse = new APIResponse<string>();
             return Ok(apiResponse);
         }
-
     }
 }

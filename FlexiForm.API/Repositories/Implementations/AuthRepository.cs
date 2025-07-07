@@ -5,7 +5,7 @@ using FlexiForm.API.Models;
 using FlexiForm.API.Repositories.Interfaces;
 
 namespace FlexiForm.API.Repositories.Implementations
-{0
+{
     /// <summary>
     /// Provides the implementation for authentication-related data operations.
     /// </summary>

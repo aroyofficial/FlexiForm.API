@@ -39,10 +39,10 @@ namespace FlexiForm.API.Services.Implementations
             using (var message = new MailMessage(_from, to))
             {
                 message.Subject = "FlexiForm - Reset Password Request";
-                message.Body = await GetBodyAsync(payload, "Templates/ForgotPassword.html");
+                message.Body = await GetBodyAsync(payload, "EmailTemplates/ForgotPassword.html");
                 message.IsBodyHtml = true;
 
-                _smtpClient.SendAsync(message, null);
+                _smtpClient.Send(message);
             }
         }
 
@@ -53,10 +53,10 @@ namespace FlexiForm.API.Services.Implementations
             using (var message = new MailMessage(_from, to))
             {
                 message.Subject = "FlexiForm - Password Changed Alert";
-                message.Body = await GetBodyAsync(payload, "Templates/ResetPasswordConfirmation.html");
+                message.Body = await GetBodyAsync(payload, "EmailTemplates/ResetPasswordConfirmation.html");
                 message.IsBodyHtml = true;
 
-                _smtpClient.SendAsync(message, null);
+                _smtpClient.Send(message);
             }
         }
 
@@ -85,7 +85,7 @@ namespace FlexiForm.API.Services.Implementations
 
             foreach (var (key, value) in payload.Macros)
             {
-                body = body.Replace(key, value);
+                body = body.Replace(("{{" + key + "}}").ToUpper(), value);
             }
 
             return body;

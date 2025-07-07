@@ -43,9 +43,14 @@ namespace FlexiForm.API.Services.Implementations
         }
 
         /// <inheritdoc/>
-        public async Task GenerateOTPAsync(string email)
+        public async Task GenerateOTPAsync(ForgotPasswordRequest request)
         {
-            var lookUpRequest = _mapper.Map<UserLookupRequest>(email);
+            if (request == null)
+            {
+                throw new InvalidRequestException();
+            }
+
+            var lookUpRequest = _mapper.Map<UserLookupRequest>(request.Email);
             var user = await _repository.GetAsync(lookUpRequest);
 
             if (user == null)
@@ -54,21 +59,23 @@ namespace FlexiForm.API.Services.Implementations
             }
 
             var otp = OTPHelper.Generate();
-            var request = new OTPRequest()
+            const int expiryMinutes = 1;
+            var otpRequest = new OTPRequest()
             {
-                Value = otp.Value,
+                Value = otp.Hash,
                 Salt = otp.Salt,
                 GeneratedAt = DateTime.UtcNow,
-                ExpiredAt = DateTime.UtcNow.AddMinutes(10),
+                ExpiredAt = DateTime.UtcNow.AddMinutes(expiryMinutes),
                 CreatedBy = user.RowId
             };
-            await _authRepository.AddOTPAsync(request);
+            await _authRepository.AddOTPAsync(otpRequest);
             var payload = new MailPayload()
             {
                 ToEmail = user.Email,
                 Macros = new Dictionary<string, string>
                 {
                     { "OTP", otp.Value },
+                    { "EXPIRY", expiryMinutes.ToString() }
                 }
             };
             await _mailService.SendForgotPasswordMailAsync(payload);
@@ -115,9 +122,9 @@ namespace FlexiForm.API.Services.Implementations
                 ToEmail = user.Email,
                 Macros = new Dictionary<string, string>
                 {
-                    { "UserName", user.FirstName },
-                    { "DateTime", _currentUser.LocalTimeNow.ToString("MMMM d, yyyy 'at' h:mm tt") },
-                    { "CurrentYear", _currentUser.LocalTimeNow.Year.ToString() },
+                    { "USERNAME", user.FirstName },
+                    { "DATETIME", _currentUser.LocalTimeNow.ToString("MMMM d, yyyy 'at' h:mm tt") },
+                    { "CURRENTYEAR", _currentUser.LocalTimeNow.Year.ToString() },
                 }
             };
 
